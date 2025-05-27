@@ -134,8 +134,11 @@ uint16_t  statusRegAdrs[5] =
 uint16_t sendCmdUCC5870(uint16_t cmd)
 {
   uint16_t tmp;
-  tx_data = cmd;      // to monitor cmd in debug window - can be commented out
-  tmp = SPI.transfer(tx_data);
+  tx_data = cmd;      // to monitor cmd in debug window - can be commented out  
+  digitalWrite(10, LOW);
+  tmp = SPI.transfer16(tx_data);
+  digitalWrite(10, HIGH);
+
   return tmp;
 }
 
@@ -143,8 +146,7 @@ uint16_t sendCmdUCC5870(uint16_t cmd)
 uint16_t readRegUCC5870(uint16_t chipAddress,
                         uint16_t regAddress)
 {
-    int16_t tmp;
-
+    uint16_t tmp;
     UCC5870_RD_REG(chipAddress, regAddress);
     tmp = UCC5870_NOP(chipAddress);
 
@@ -421,26 +423,20 @@ UCC5870_Status_e Init_UCC5870(uint32_t *pwm_gpio)
     // Setup Chip Addresses for all UCC5870s - UH, UL, VH, VL, WH and WL
     //
     digitalWrite(pwm_gpio[UH], HIGH);
-    UCC5870_WR_CA(GD[UH]);
+    UCC5870_WR_CA(GD[UH]); //64929
     digitalWrite(pwm_gpio[UH], LOW);
     
     digitalWrite(pwm_gpio[UL], HIGH);
-    UCC5870_WR_CA(GD[UL]);
+    UCC5870_WR_CA(GD[UL]); //64930
     digitalWrite(pwm_gpio[UL], LOW);
 
     //
     // Reset drivers and put it in CONFIG mode
     //
-    UCC5870_DRV_DIS(GD[UH]);  // DRV_DIS and SWRESET sequence helps to ..
-    UCC5870_SWRESET(GD[UH]);  //  .. reset and restart the drivers
-    UCC5870_CFG_IN(GD[UH]);   // put the drivers in config mode
-    CLEAR_FAULTS(GD[UH]);     // clear faults at reset before configuring
-
-    
-    UCC5870_DRV_DIS(GD[UL]);  // DRV_DIS and SWRESET sequence helps to ..
-    UCC5870_SWRESET(GD[UL]);  //  .. reset and restart the drivers
-    UCC5870_CFG_IN(GD[UL]);   // put the drivers in config mode
-    CLEAR_FAULTS(GD[UL]);     // clear faults at reset before configuring
+    UCC5870_DRV_DIS(BROADCAST);  // DRV_DIS and SWRESET sequence helps to ..
+    UCC5870_SWRESET(BROADCAST);  //  .. reset and restart the drivers
+    UCC5870_CFG_IN(BROADCAST);   // put the drivers in config mode
+    CLEAR_FAULTS(BROADCAST);     // clear faults at reset before configuring
 
     //
     // Configure UCC5870 -UH, UL, VH, VL, WH and WL
