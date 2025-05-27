@@ -5,12 +5,12 @@
 #include "ucc5870.h"
 
 //definirat GPIO pinove
-#define IN_UH 13
-#define IN_UL 12
-#define MISO  11
-#define MOSI  10
-#define CLK   9
-#define CS    8
+#define IN_UH 9
+#define IN_UL 8
+#define MISO  12
+#define MOSI  11
+#define CLK   13
+#define CS    10
 
 uint32_t PWM_GPIOs[DRIVER_NUM] =
 {
@@ -32,14 +32,17 @@ void setup() {
   //  ;
   //}
 
-  //inicijalizirat SPI
+  // Initialize SPI with MODE1 (CPOL=0, CPHA=1)
   SPI.begin();
+  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
 
+  breakpoint();
   //kofigurirat lokalno registre
   Init_UCC5870_Regs();
 
+  breakpoint();
   //konfigurirat drivere
-  //int initValue = 
+  int initValue = 
   Init_UCC5870(PWM_GPIOs);
 /*
   if (!initValue)
