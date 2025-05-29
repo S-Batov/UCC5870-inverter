@@ -1,16 +1,15 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include "avr8-stub.h"
 #include "ucc5870_regs.h"
 #include "ucc5870.h"
+#include "io_pin_definitions.h"
+#include "ucc5870_status_strings.h"
 
-//definirat GPIO pinove
-#define IN_UH 9
-#define IN_UL 8
-#define MISO  12
-#define MOSI  11
-#define CLK   13
-#define CS    10
+#ifdef DEBUG_MODE
+  #include "avr8-stub.h"
+#else
+  #define debug_init() // Dummy macro
+#endif
 
 uint32_t PWM_GPIOs[DRIVER_NUM] =
 {
@@ -21,40 +20,39 @@ uint32_t PWM_GPIOs[DRIVER_NUM] =
 void setup() {
   debug_init();
 
-  //konfigurirat GPIO pinove
+  // Configure GPIO pins
   pinMode(IN_UH, OUTPUT);
   pinMode(IN_UL, OUTPUT);
-
-
-  //inicijalizirat serijski port
-  //Serial.begin(9600);
-  //while(!Serial){
-  //  ;
-  //}
 
   // Initialize SPI with MODE1 (CPOL=0, CPHA=1)
   SPI.begin();
   SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
+  
+#ifndef DEBUG_MODE
+  Serial.begin(115200);
+  while(!Serial)
+#endif
 
-  breakpoint();
-  //kofigurirat lokalno registre
+  // Configure local registers
   Init_UCC5870_Regs();
 
+#ifdef DEBUG_MODE
   breakpoint();
-  //konfigurirat drivere
-  int initValue = 
+#endif
+
+  // Configure driver registers
   Init_UCC5870(PWM_GPIOs);
-/*
-  if (!initValue)
-    Serial.println("UCC1: PASS");
-  else
-    Serial.println("UCC2: FAIL");
-*/
 }
 
 void loop() {
   //Provjeravat serijski port treba li pokrenit DPT
   digitalWrite(IN_UH, HIGH);
+  print_status();
+//  print_status1_reg(ucc5870[UH].status1.all);
+//  print_status1_reg(0);
+
+
+  delay(10000);
 }
 
 /*
