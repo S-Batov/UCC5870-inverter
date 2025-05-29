@@ -2,6 +2,7 @@
 #include "ucc5870.h"
 #include <SPI.h>
 #include <Arduino.h>
+#include "ucc5870_status_strings.h"
 
 // =============================================================================
 // UCC5870 gate driver chip address definitions
@@ -478,15 +479,14 @@ UCC5870_Status_e inverterDiagnostics(void)
   priReadyFault = 0;  // logic HIGH bit positions indicate driver at fault
   secReadyFault = 0;  // logic HIGH bit positions indicate driver at fault
 
-  diagStatus[UH] = diagnose_UCC5870(UH);
-  statusFault   += (diagStatus[UH] == FAIL) << UH;
-  priReadyFault += (ucc5870[UH].status2.bit.PRI_RDY == NOT_READY);
-  secReadyFault += (ucc5870[UH].status4.bit.SEC_RDY == NOT_READY);
+  for(uint16_t i = 0; i < DRIVER_NUM; i++)
+  {
+    diagStatus[i] = diagnose_UCC5870(i);
+    statusFault   += (diagStatus[i] == FAIL) << UH;
+    priReadyFault += (ucc5870[i].status2.bit.PRI_RDY == NOT_READY);
+    secReadyFault += (ucc5870[i].status4.bit.SEC_RDY == NOT_READY);
+  }
 
-  diagStatus[UL] = diagnose_UCC5870(UL);
-  statusFault   += (diagStatus[UL] == FAIL) << UL;
-  priReadyFault += (ucc5870[UL].status2.bit.PRI_RDY == NOT_READY);
-  secReadyFault += (ucc5870[UL].status4.bit.SEC_RDY == NOT_READY);
   //
   // check if any driver's status register indicates fault
   //
@@ -546,16 +546,8 @@ uint16_t writeVerifyRegUCC5870(uint16_t chipAddress,
 {
   uint16_t tmp;
 
-  //Serial.print("Data: ");
-  //Serial.println(data);
-
   writeRegUCC5870(chipAddress, regAddress, data);
   tmp = readRegUCC5870(chipAddress, regAddress);
-
-  //Serial.print("Tmp: ");
-  //Serial.println(tmp);
-
-  //(tmp == data) ? Serial.println("PASS") : Serial.println("FAIL");
 
   return ( (tmp == data) ? PASS : FAIL );
 }
@@ -590,4 +582,26 @@ uint16_t writeVerify_UCC5870(uint16_t i)
     return ( (failCnt == 0) ? PASS : FAIL );
 }
 
+
+// =============================================================================
+uint16_t print_status()
+{
+  for(uint16_t i = 0; i < DRIVER_NUM; i++)
+  {
+    diagnose_UCC5870(i);
+  }
+
+  print_status1_reg(ucc5870[UH].status1.all);
+  delay(30);
+  print_status2_reg(ucc5870[UH].status2.all);
+  delay(30);
+  print_status3_reg(ucc5870[UH].status3.all);
+  delay(30);
+  print_status4_reg(ucc5870[UH].status4.all);
+  delay(30);
+  print_status5_reg(ucc5870[UH].status5.all);
+  delay(30);
+
+  return 0;
+}
 
