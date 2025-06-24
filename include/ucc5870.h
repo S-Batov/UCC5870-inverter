@@ -61,7 +61,7 @@ extern
 #endif
 UCC5870_Status_e  Init_UCC5870(uint32_t * pwm_gpio);
 
-uint16_t print_status();
+void print_full_status();
 
 #ifdef _UCC5870
 // local prototypes for use within ucc5870.c

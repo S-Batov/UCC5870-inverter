@@ -8,13 +8,22 @@
 #include "ucc5870_regs.h"
 #include "ucc5870_status_strings.h"
 
-#define SERIAL_NOT_ACTIVE 1
-
-uint16_t print_status1_reg(uint16_t regVal)
+void print_status_header(uint16_t regVal)
 {
-    if(!Serial)
-        return SERIAL_NOT_ACTIVE;
-    
+    //ispiše za koji driver se ispisuju podaci
+    UCC5870_STATUS1_REG_BITS* bits = (UCC5870_STATUS1_REG_BITS*)&regVal; //prepravit da pročita adresu
+
+    Serial.println();
+    Serial.println();
+    Serial.print("Status information for: ");
+    switch(regVal)
+    {
+        //ovisno koja je adresa napiši UH, WL itd.
+    }
+}   
+
+void print_status1_reg(uint16_t regVal)
+{
     UCC5870_STATUS1_REG_BITS* bits = (UCC5870_STATUS1_REG_BITS*)&regVal;
 
     Serial.println(F("--------------------------------------"));
@@ -54,15 +63,10 @@ uint16_t print_status1_reg(uint16_t regVal)
     
     Serial.print("INP_STATE          : ");
     Serial.println(bits->INP_STATE ? "HIGH" : "LOW");
-
-    return 0;
 }
 
-uint16_t print_status2_reg(uint16_t reg_val)
+void print_status2_reg(uint16_t reg_val)
 {
-    if(!Serial)
-        return SERIAL_NOT_ACTIVE;
-    
     UCC5870_STATUS2_REG_BITS* bits = (UCC5870_STATUS2_REG_BITS*)&reg_val;
     
     Serial.println(F("--------------------------------------"));
@@ -115,15 +119,10 @@ uint16_t print_status2_reg(uint16_t reg_val)
     // Ready status
     Serial.print(F("PRI_RDY        : "));
     Serial.println(bits->PRI_RDY ? "READY" : "NOT READY");
-
-    return 0;
 }
 
-uint16_t print_status3_reg(uint16_t reg_val) 
+void print_status3_reg(uint16_t reg_val) 
 {
-    if(!Serial)
-        return SERIAL_NOT_ACTIVE;
-    
     UCC5870_STATUS3_REG_BITS* bits = (UCC5870_STATUS3_REG_BITS*)&reg_val;
     
     Serial.println(F("--------------------------------------"));
@@ -180,15 +179,10 @@ uint16_t print_status3_reg(uint16_t reg_val)
     
     Serial.print(F("GM_STATE           : "));
     Serial.println(bits->GM_STATE ? "ACTIVE" : "INACTIVE");
-
-    return 0;
 }
 
-uint16_t print_status4_reg(uint16_t reg_val) 
+void print_status4_reg(uint16_t reg_val) 
 {
-    if(!Serial)
-        return SERIAL_NOT_ACTIVE;
-    
     UCC5870_STATUS4_REG_BITS* bits = (UCC5870_STATUS4_REG_BITS*)&reg_val;
     
     Serial.println(F("--------------------------------------"));
@@ -230,15 +224,10 @@ uint16_t print_status4_reg(uint16_t reg_val)
     // Voltage state
     Serial.print(F("VCE_STATE         : "));
     Serial.println(bits->VCE_STATE ? "HIGH" : "LOW");
-
-    return 0;
 }
 
-uint16_t print_status5_reg(uint16_t reg_val)
+void print_status5_reg(uint16_t reg_val)
 {
-    if(!Serial)
-        return SERIAL_NOT_ACTIVE;
-
     UCC5870_STATUS5_REG_BITS* bits = (UCC5870_STATUS5_REG_BITS*)&reg_val;
 
     Serial.println(F("--------------------------------------"));
@@ -247,8 +236,6 @@ uint16_t print_status5_reg(uint16_t reg_val)
     
     Serial.print(F("ADC Status       : "));
     Serial.println(bits->ADC_FAULT ? "FAULT" : "OK");
-
-    return 0;
 }
 
 #endif // NOT DEBUG_MODE

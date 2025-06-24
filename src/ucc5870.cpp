@@ -60,6 +60,11 @@
 #define  STATUS5_FAULT_MASK       (1 * ADC_FAULT_MASK)
 
 // =============================================================================
+// Fault definitions
+#define HS_fault 0
+#define LS_fault 1
+
+// =============================================================================
 // Local enumerations
 enum {
     FAIL = 0,
@@ -582,26 +587,19 @@ uint16_t writeVerify_UCC5870(uint16_t i)
     return ( (failCnt == 0) ? PASS : FAIL );
 }
 
-
 // =============================================================================
-uint16_t print_status()
+void print_full_status()
 {
   for(uint16_t i = 0; i < DRIVER_NUM; i++)
   {
     diagnose_UCC5870(i);
+
+    print_status_header(ucc5870[i].status1.all);
+    print_status1_reg(ucc5870[i].status1.all);
+    print_status2_reg(ucc5870[i].status2.all);
+    print_status3_reg(ucc5870[i].status3.all);
+    print_status4_reg(ucc5870[i].status4.all);
+    print_status5_reg(ucc5870[i].status5.all);
   }
-
-  print_status1_reg(ucc5870[UH].status1.all);
-  delay(30);
-  print_status2_reg(ucc5870[UH].status2.all);
-  delay(30);
-  print_status3_reg(ucc5870[UH].status3.all);
-  delay(30);
-  print_status4_reg(ucc5870[UH].status4.all);
-  delay(30);
-  print_status5_reg(ucc5870[UH].status5.all);
-  delay(30);
-
-  return 0;
 }
 
